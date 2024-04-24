@@ -2,5 +2,7 @@
 
 
 ## sources
+https://www.red3d.com/cwr/boids/ \
 https://www.youtube.com/watch?v=mhjuuHl6qHM
-https://www.red3d.com/cwr/boids/
+
+31:41

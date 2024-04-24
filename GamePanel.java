@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
 import java.util.Arrays;
 
 import javax.swing.Timer;
@@ -15,8 +16,8 @@ import javax.swing.JPanel;
 
 public class GamePanel extends JPanel  implements ActionListener {
 
-    static final int SCREEN_WIDTH = 800;
-    static final int SCREEN_HEIGHT = 600;
+    static final int SCREEN_WIDTH = 1600;
+    static final int SCREEN_HEIGHT = 1000;
 
 
     final int FPS = 30;
@@ -25,7 +26,7 @@ public class GamePanel extends JPanel  implements ActionListener {
 
     boolean restart;
 
-    final int BOIDS_NUMBER = 50;
+    final int BOIDS_NUMBER = 500;
     Boid[] flock = new Boid[BOIDS_NUMBER];
 
 
@@ -68,6 +69,7 @@ public class GamePanel extends JPanel  implements ActionListener {
             switch (e.getKeyCode()) {
                 case 32:
                     restart = true;
+                    System.out.print("restarted: ");
                     break;
 
                 default:
@@ -86,12 +88,19 @@ public class GamePanel extends JPanel  implements ActionListener {
         // move all flock
         for (Boid b: flock){
             b.align(flock);
+            b.cohesion(flock);
+            b.separation(flock);
             b.update(SCREEN_WIDTH, SCREEN_HEIGHT);
         }
 
         repaint(); // to call paintComponent
 
     }
+    
+    // some constants to create triangle
+    int L = 10;
+    int L2 = 5;
+    int L3 = 7;
 
     // called by repaint()
     public void paintComponent(Graphics g) {
@@ -102,9 +111,40 @@ public class GamePanel extends JPanel  implements ActionListener {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 
-        g2.setColor(new Color(255, 255, 255));
         for (Boid b: flock) {
-                g2.fillOval((int)b.position.x(), (int)b.position.y(), 20, 20);
+            g2.setColor(new Color(b.colorR, b.colorG, b.colorB));
+
+            //g2.fillOval((int)b.position.x() - 1, (int)b.position.y() - 1, 2, 2); // actual point
+
+            // find inclination angle
+            // by doing angle * 180 / PI it changes too rapidly
+            // solution + 90 fixes orientation issues, that i have no clue why there were
+            // there in the first place
+            double angle = Math.atan2(b.velocity.y(), b.velocity.x()) + 90;
+
+            // setup transform
+            AffineTransform oldTransform = g2.getTransform();
+
+            AffineTransform transform = new AffineTransform();
+            transform.rotate(angle, b.position.x(), b.position.y());
+            g2.setTransform(transform);
+
+            // create triangle
+            // can use drawPolygon or fillPolygon
+            g2.fillPolygon(new int[]{
+                (int)b.position.x(),
+                (int)b.position.x() + L2,
+                (int)b.position.x() - L2
+            },
+            new int[]{
+                (int)b.position.y() - L,
+                (int)b.position.y() + L3,
+                (int)b.position.y() + L3
+            }, 3);
+
+
+            g2.setTransform(oldTransform);
+
         }
 
         g2.dispose();
