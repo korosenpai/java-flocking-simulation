@@ -26,7 +26,7 @@ public class GamePanel extends JPanel  implements ActionListener {
 
     boolean restart;
 
-    final int BOIDS_NUMBER = 500;
+    final int BOIDS_NUMBER = 1000;
     Boid[] flock = new Boid[BOIDS_NUMBER];
 
 

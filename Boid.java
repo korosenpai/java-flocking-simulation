@@ -145,8 +145,8 @@ class Boid {
             this.position.v[1] = screen_height;
         }
 
-
-        this.acceleration.v = new double[2]; // reset acceleration (wil be set by three rules)
+        // reset acceleration (wil be set by three rules)
+        this.acceleration.v = new double[2];
 
     }
 
