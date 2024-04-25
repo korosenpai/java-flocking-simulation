@@ -12,6 +12,7 @@ import java.util.Arrays;
 
 import javax.swing.Timer;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class GamePanel extends JPanel  implements ActionListener {
@@ -19,15 +20,28 @@ public class GamePanel extends JPanel  implements ActionListener {
     static final int SCREEN_WIDTH = 1600;
     static final int SCREEN_HEIGHT = 1000;
 
-
     final int FPS = 30;
     final int DELAY = 1000 / FPS;
     Timer timer;
 
     boolean restart;
 
-    final int BOIDS_NUMBER = 1000;
+    final int BOIDS_NUMBER = 500;
     Boid[] flock = new Boid[BOIDS_NUMBER];
+
+
+    // slider to change values
+    public JFrame sliderWindow;
+    public SliderPanel sliderPanel;
+    private float align_multiplier = 1;
+    private float cohesion_multiplier = 1;
+    private float separation_multiplier = 1;
+
+    // to change perception (they all start at Boid.PERCEPTION_DISTANCE)
+    private float align_perception_multiplier = 1;
+    private float cohesion_perception_multiplier = 1;
+    private float separation_perception_multiplier = 1;
+
 
 
     public static void main(String[] args) {
@@ -42,10 +56,27 @@ public class GamePanel extends JPanel  implements ActionListener {
         this.setFocusable(true); // to use keyAdapter
         this.requestFocusInWindow();
         this.addKeyListener(new MyKeyAdapter());
+
+        // start slider panel
+        this.sliderWindow = new JFrame();
+        sliderWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        sliderWindow.setResizable(false);
+        sliderWindow.setTitle("settings");
+
+        this.sliderPanel = new SliderPanel();
+        sliderWindow.add(this.sliderPanel);
+        sliderWindow.pack(); // resize sliderWindow to fit preferred size (specified in gamepanel)
+
+        sliderWindow.setLocationRelativeTo(null); // specify location of the sliderWindow // unll -> display at center of screen
+        sliderWindow.setVisible(true); 
+
+
+        System.out.println("ready.");
     }
 
     public void start() {
         restart = false;
+        sliderPanel.reset();
 
         System.out.println("game loop running, fps: " + FPS);
         if (timer == null) {
@@ -53,6 +84,8 @@ public class GamePanel extends JPanel  implements ActionListener {
             timer.setRepeats(true);
             timer.start();
         }
+
+
 
         // populate boid array
         for (int i = 0; i < flock.length; i++) {
@@ -68,6 +101,7 @@ public class GamePanel extends JPanel  implements ActionListener {
             // System.out.println(e.getKeyCode());
             switch (e.getKeyCode()) {
                 case 32:
+                    // if space pressed
                     restart = true;
                     System.out.print("restarted: ");
                     break;
@@ -83,13 +117,21 @@ public class GamePanel extends JPanel  implements ActionListener {
         // update the screen
         //System.out.println("starting new cycle");
 
+
+        // System.out.print(this.sliderPanel.getAlignmentMult());
+        // System.out.print(" - ");
+        // System.out.print(this.sliderPanel.getCohesionMult());
+        // System.out.print(" - ");
+        // System.out.print(this.sliderPanel.getSeparationMult());
+        // System.out.println();
+
         if (restart) start();
 
         // move all flock
         for (Boid b: flock){
-            b.align(flock);
-            b.cohesion(flock);
-            b.separation(flock);
+            b.align(flock, this.sliderPanel.getAlignmentMult(), align_perception_multiplier);
+            b.cohesion(flock, this.sliderPanel.getCohesionMult(), cohesion_perception_multiplier);
+            b.separation(flock, this.sliderPanel.getSeparationMult(), separation_perception_multiplier);
             b.update(SCREEN_WIDTH, SCREEN_HEIGHT);
         }
 

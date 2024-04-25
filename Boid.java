@@ -13,7 +13,7 @@ class Boid {
     private int MAX_VELOCITY = 5;
     private int MIN_VELOCITY = -MAX_VELOCITY;
 
-    private int PERCEPTION_DISTANCE = 50; // radius where boid checks for other boids to align
+    private float PERCEPTION_DISTANCE = 50; // radius where boid checks for other boids to align
     private double MAX_FORCE = 0.2; // max amount of steering a boid can do at once
 
     public Vector2 position = new Vector2(); // vector that is iinitialized to zero
@@ -30,7 +30,7 @@ class Boid {
 
     }
 
-    public void align(Boid[] boids) {
+    public void align(Boid[] boids, float multiplier, float perception_distance_multiplier) {
         int total = 0;
         Vector2 avg = new Vector2(); // desired velocity to steer to
         for (int i = 0; i < boids.length; i++) {
@@ -40,7 +40,7 @@ class Boid {
 
             // check if b is in vicinity
             float d = (float)Math.sqrt( Math.pow(b.position.x() - this.position.x(), 2) + Math.pow(b.position.y() - this.position.y(), 2) );
-            if (d > PERCEPTION_DISTANCE)
+            if (d > PERCEPTION_DISTANCE * perception_distance_multiplier)
                 continue;
 
             avg.add(b.velocity);
@@ -53,13 +53,16 @@ class Boid {
 
             // steer towards average
             avg.sub(this.velocity); // remove current velocity
-            avg.limit(this.MAX_FORCE); // avoid to steer to it immidiately
+            avg.limit(this.MAX_FORCE); // avoid to steer to it immidiately // NOTE: test multiplying the multiplier with the max force 
         }
+
+        avg.v[0] *= multiplier;
+        avg.v[1] *= multiplier;
 
         this.acceleration.add(avg);
     }
 
-    public void cohesion(Boid[] boids) {
+    public void cohesion(Boid[] boids, float multiplier, float perception_distance_multiplier) {
         int total = 0;
         Vector2 avg = new Vector2(); // desired velocity to steer to
         for (int i = 0; i < boids.length; i++) {
@@ -69,7 +72,7 @@ class Boid {
 
             // check if b is in vicinity
             float d = (float)Math.sqrt( Math.pow(b.position.x() - this.position.x(), 2) + Math.pow(b.position.y() - this.position.y(), 2) );
-            if (d > PERCEPTION_DISTANCE)
+            if (d > PERCEPTION_DISTANCE * perception_distance_multiplier)
                 continue;
 
             avg.add(b.position);
@@ -86,10 +89,13 @@ class Boid {
             avg.limit(this.MAX_FORCE);
         }
 
+        avg.v[0] *= multiplier;
+        avg.v[1] *= multiplier;
+
         this.acceleration.add(avg);
     }
 
-    public void separation(Boid[] boids) {
+    public void separation(Boid[] boids, float multiplier, float perception_distance_multiplier) {
         int total = 0;
         Vector2 avg = new Vector2(); // desired velocity to steer to
         for (int i = 0; i < boids.length; i++) {
@@ -99,7 +105,7 @@ class Boid {
 
             // check if b is in vicinity
             float d = (float)Math.sqrt( Math.pow(b.position.x() - this.position.x(), 2) + Math.pow(b.position.y() - this.position.y(), 2) );
-            if (d > PERCEPTION_DISTANCE)
+            if (d > PERCEPTION_DISTANCE * perception_distance_multiplier)
                 continue;
 
             Vector2 diff = new Vector2();
@@ -123,6 +129,9 @@ class Boid {
             avg.sub(this.velocity);
             avg.limit(this.MAX_FORCE);
         }
+
+        avg.v[0] *= multiplier;
+        avg.v[1] *= multiplier;
 
         this.acceleration.add(avg);
     }
