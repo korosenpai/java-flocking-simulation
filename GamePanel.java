@@ -33,15 +33,6 @@ public class GamePanel extends JPanel  implements ActionListener {
     // slider to change values
     public JFrame sliderWindow;
     public SliderPanel sliderPanel;
-    private float align_multiplier = 1;
-    private float cohesion_multiplier = 1;
-    private float separation_multiplier = 1;
-
-    // to change perception (they all start at Boid.PERCEPTION_DISTANCE)
-    private float align_perception_multiplier = 1;
-    private float cohesion_perception_multiplier = 1;
-    private float separation_perception_multiplier = 1;
-
 
 
     public static void main(String[] args) {
@@ -127,11 +118,11 @@ public class GamePanel extends JPanel  implements ActionListener {
 
         if (restart) start();
 
-        // move all flock
+        // move all boids of the flock
         for (Boid b: flock){
-            b.align(flock, this.sliderPanel.getAlignmentMult(), align_perception_multiplier);
-            b.cohesion(flock, this.sliderPanel.getCohesionMult(), cohesion_perception_multiplier);
-            b.separation(flock, this.sliderPanel.getSeparationMult(), separation_perception_multiplier);
+            b.align(flock, this.sliderPanel.getAlignmentMult(), 1);
+            b.cohesion(flock, this.sliderPanel.getCohesionMult(), 1);
+            b.separation(flock, this.sliderPanel.getSeparationMult(), 1);
             b.update(SCREEN_WIDTH, SCREEN_HEIGHT);
         }
 
@@ -139,7 +130,7 @@ public class GamePanel extends JPanel  implements ActionListener {
 
     }
     
-    // some constants to create triangle
+    // some constants to create the boids triangles
     int L = 10;
     int L2 = 5;
     int L3 = 7;
@@ -171,7 +162,7 @@ public class GamePanel extends JPanel  implements ActionListener {
             transform.rotate(angle, b.position.x(), b.position.y());
             g2.setTransform(transform);
 
-            // create triangle
+            // draw triangles
             // can use drawPolygon or fillPolygon
             g2.fillPolygon(new int[]{
                 (int)b.position.x(),

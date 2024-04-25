@@ -11,7 +11,6 @@ class Boid {
 
 
     private int MAX_VELOCITY = 5;
-    private int MIN_VELOCITY = -MAX_VELOCITY;
 
     private float PERCEPTION_DISTANCE = 50; // radius where boid checks for other boids to align
     private double MAX_FORCE = 0.2; // max amount of steering a boid can do at once
@@ -25,7 +24,7 @@ class Boid {
     Boid(int screen_width, int screen_height) {
 
         this.position.v = new double[]{random.nextInt(screen_width), random.nextInt(screen_height)};
-        this.velocity.randomize(MIN_VELOCITY, MAX_VELOCITY);
+        this.velocity.randomize(-MAX_VELOCITY, MAX_VELOCITY);
         // this.velocity.normalize();
 
     }

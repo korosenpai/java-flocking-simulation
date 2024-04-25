@@ -13,6 +13,12 @@ class SliderPanel extends JPanel{
     private Slider cohesionMultiplier;
     private Slider separationMultiplier;
 
+    // TODO:
+    // to change perception (they all start at Boid.PERCEPTION_DISTANCE)
+    // private float align_perception_multiplier = 1;
+    // private float cohesion_perception_multiplier = 1;
+    // private float separation_perception_multiplier = 1;
+
     SliderPanel() {
         this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT)); // set window size
         this.setBackground(Color.black);
